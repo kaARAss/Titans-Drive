@@ -94,8 +94,8 @@ body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
 .about{position:relative;padding:clamp(80px,13vh,190px) var(--pad);text-align:center}
 .about__text{max-width:1100px;margin:0 auto;font-family:'Times New Roman',Times,serif;font-weight:400;
   font-size:clamp(1.3rem,2.6vw,2.15rem);line-height:1.5;letter-spacing:.005em}
-@media(max-width:640px){.about__text br.hb{display:inline}
-  .about__text{font-family:'Times New Roman',Times,serif;font-size:clamp(9px,3vw,16px);line-height:1.7;white-space:nowrap;letter-spacing:0;padding:0 2px}}
+@media(max-width:640px){.about__text br.hb{display:none}
+  .about__text{font-family:'Times New Roman',Times,serif;font-size:clamp(1.05rem,4.6vw,1.5rem);line-height:1.55;white-space:normal;letter-spacing:0;padding:0}}
 .about__text em{color:var(--red);font-style:italic}
 .about__text b{color:var(--ink);font-style:normal}
 
@@ -405,7 +405,7 @@ body.tmodal-open{overflow:hidden}
 /* ===== MOBILE: tighter vertical spacing ===== */
 @media(max-width:700px){
   .sec{padding:46px var(--pad)}
-  .about{padding:50px var(--pad)}
+  .about{padding:34px var(--pad)}
   .booking{padding:46px var(--pad)}
   .pfoot{padding:40px var(--pad) 32px}
   .fleet__row{padding:30px 0}
@@ -413,3 +413,6 @@ body.tmodal-open{overflow:hidden}
   .booking__grid{margin-top:30px}
   .sec__lead{margin-top:16px}
 }
+
+/* MOBILE hero image on prokat2 (portrait banner, full-screen, no bars) */
+@media(max-width:640px){.phero{min-height:100svh}.phero__bg{background-image:url(../img/hero-mobile.png?v=1);background-position:50% 50%;background-size:cover}}
