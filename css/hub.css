@@ -531,3 +531,34 @@ body::after{content:none!important;display:none!important}
     display:flex; width:max-content; margin:2vh auto 9vh;
   }
 }
+
+/* ==================== v56 — MOBILE home: CTA above cards, arrows below, no overlap ==================== */
+@media(max-width:760px){
+  main{display:block}
+  .content{
+    display:flex !important; flex-direction:column; align-items:center; justify-content:flex-start;
+    min-height:100dvh; height:auto; width:100%; box-sizing:border-box;
+    padding:92px 0 40px; gap:20px;
+  }
+  /* 1) КНОПКА ЗАПИСАТЬСЯ — НАД карточками */
+  .home-cta{
+    order:1; position:relative !important; left:auto !important; right:auto !important;
+    top:auto !important; bottom:auto !important; transform:none !important; margin:0 !important;
+  }
+  .home-cta:hover{ transform:translateY(-3px) !important; }
+  /* 2) КАРТОЧКИ-СЛАЙДЕР */
+  .cine-wrap{
+    order:2; position:relative !important; inset:auto !important;
+    display:flex !important; flex-direction:column; align-items:center; justify-content:flex-start;
+    width:100%; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; gap:18px;
+  }
+  .cine{ width:88vw; height:54vh; margin:0; }
+  /* 3) СТРЕЛКИ + ТОЧКИ — в потоке ПОД карточками, без наложения */
+  .cine__controls{
+    position:static !important; left:auto !important; right:auto !important;
+    top:auto !important; bottom:auto !important; transform:none !important;
+    margin:0 !important; z-index:1;
+  }
+  /* убираем плавающую подсказку, чтобы не мешала над кнопкой */
+  .scroll-hint{ display:none !important; }
+}

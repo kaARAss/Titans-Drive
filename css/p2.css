@@ -95,9 +95,11 @@ body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
 .about__text{max-width:1100px;margin:0 auto;font-family:'Times New Roman',Times,serif;font-weight:400;
   font-size:clamp(1.3rem,2.6vw,2.15rem);line-height:1.5;letter-spacing:.005em}
 @media(max-width:640px){.about__text br.hb{display:none}
-  .about__text{font-family:'Times New Roman',Times,serif;font-size:clamp(1.05rem,4.6vw,1.5rem);line-height:1.55;white-space:normal;letter-spacing:0;padding:0}}
+  .about__text br.mb{display:inline}
+  .about__text{font-family:'Times New Roman',Times,serif;font-size:clamp(1.25rem,5.6vw,1.75rem);line-height:1.5;white-space:normal;letter-spacing:0;padding:0 6px}}
 .about__text em{color:var(--red);font-style:italic}
 .about__text b{color:var(--ink);font-style:normal}
+.about__text br.mb{display:none}
 
 /* ===== FEATURES (что входит) ===== */
 .feat__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
@@ -414,5 +416,9 @@ body.tmodal-open{overflow:hidden}
   .sec__lead{margin-top:16px}
 }
 
-/* MOBILE hero image on prokat2 (portrait banner, full-screen, no bars) */
-@media(max-width:640px){.phero{min-height:100svh}.phero__bg{background-image:url(../img/hero-mobile.png?v=1);background-position:50% 50%;background-size:cover}}
+/* MOBILE hero on prokat2: whole portrait banner (correct proportions) + blurred backdrop, no bars, no stretch */
+@media(max-width:640px){
+  .phero{min-height:100svh;background:#0b0b0d;overflow:hidden}
+  .phero__bg{z-index:1;background-image:url(../img/hero-mobile.png?v=1);background-repeat:no-repeat;background-position:center center;background-size:contain;background-color:transparent}
+  .phero::before{content:"";position:absolute;inset:0;z-index:0;background:url(../img/hero-mobile.png?v=1) center center/cover no-repeat;filter:blur(30px) brightness(.45);transform:scale(1.25)}
+}
