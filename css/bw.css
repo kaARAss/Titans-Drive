@@ -1,0 +1,36 @@
+/* ===== BuildingsWave hero (about page) — adapted from Codrops "Buildings Wave" (iondrimba, MIT) ===== */
+/* Tall pinned hero: the canvas is sticky and the camera zoom is mapped to the hero's own
+   scroll range, so the building zooms all the way in (like the original demo) before the
+   page content below begins. */
+.bw-hero{position:relative;height:300vh;width:100%;background:#343c3c}
+.bw-hero .canvas-wrapper{position:sticky;top:0;height:100vh;overflow:hidden;z-index:1}
+.bw-hero .canvas-wrapper canvas{position:absolute!important;top:0;left:0;width:100%!important;height:100%!important;display:block}
+
+/* loader — "Загрузка" + progress bar */
+.bw-loader{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#0a0a0c;transition:opacity .8s ease-out;pointer-events:none}
+.bw-loader--done{opacity:0}
+.bw-loader__box{display:flex;flex-direction:column;align-items:center;gap:16px;width:min(72vw,300px)}
+.bw-loader__label{font-family:'Inter',sans-serif;font-size:.8rem;letter-spacing:.34em;text-transform:uppercase;color:rgba(245,243,239,.82)}
+.bw-loader__bar{position:relative;width:100%;height:3px;border-radius:3px;background:rgba(245,243,239,.14);overflow:hidden}
+.bw-loader__fill{position:absolute;left:0;top:0;height:100%;width:0;border-radius:3px;background:#ff3b30;box-shadow:0 0 16px rgba(255,59,48,.7);transition:width .25s ease}
+.bw-loader__pct{font-family:'Inter',sans-serif;font-size:.72rem;letter-spacing:.2em;color:rgba(245,243,239,.55)}
+
+/* centered overlay labels — styled like the original demo */
+.bw-overlay{position:absolute;inset:0;z-index:10;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 5vw}
+.bw-title{margin:0;display:flex;flex-direction:column;align-items:center;line-height:.82;text-transform:uppercase;text-shadow:0 12px 64px rgba(0,0,0,.5);pointer-events:auto;cursor:default}
+.bw-title__word{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(3rem,12vw,10.5rem);letter-spacing:.02em;color:#f5f3ef;transition:color .35s ease,text-shadow .35s ease}
+.bw-title__word + .bw-title__word{margin-top:clamp(28px,5.6vh,92px)}
+.bw-title__sub{margin-top:clamp(58px,9.6vh,132px);font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(1rem,3.4vw,2.4rem);letter-spacing:.18em;color:#ff4238;text-shadow:0 0 14px rgba(255,59,48,.9),0 0 34px rgba(255,59,48,.55)}
+.bw-title:hover .bw-title__word{color:#f6c445;text-shadow:0 0 18px rgba(246,196,69,.8),0 0 46px rgba(246,196,69,.45)}
+.bw-credits{margin:26px 0 0;font-family:'Inter',sans-serif;font-size:clamp(.72rem,1.4vw,.95rem);line-height:1.9;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,243,239,.72)}
+
+/* minimal scroll cue */
+.bw-scrollcue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:11;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,243,239,.62);pointer-events:none;white-space:nowrap;animation:bw-cue 2s ease-in-out infinite}
+@keyframes bw-cue{0%,100%{transform:translateX(-50%) translateY(0);opacity:.5}50%{transform:translateX(-50%) translateY(6px);opacity:1}}
+
+@media(max-width:760px){
+  .bw-hero{height:230vh}
+  .bw-scrollcue{font-size:.62rem;bottom:24px}
+  .bw-credits{font-size:.66rem}
+  .bw-title__sub{letter-spacing:.1em}
+}

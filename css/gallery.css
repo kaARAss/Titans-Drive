@@ -1,0 +1,99 @@
+/* Титаны Драйва — Depth Gallery · gallery.css */
+*,*::after,*::before{box-sizing:border-box}
+:root{
+  --bg:#08080a;
+  --ink:#f4f2ee;
+  --dim:rgba(244,242,238,.6);
+  --line:rgba(255,255,255,.16);
+  --red:#ff3b30;
+  --gold:#e6b34a;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace;
+  --disp:'Unbounded','Arial Black',sans-serif;
+  --tracking:.08em;
+}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--mono);font-size:13px;line-height:1.3;
+  letter-spacing:var(--tracking);text-transform:uppercase;
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none;transition:opacity .3s ease}
+a:hover{opacity:.62}
+
+/* loader */
+body.loading::before{content:'';position:fixed;inset:0;z-index:9000;background:var(--bg)}
+body.loading::after{content:'';position:fixed;top:50%;left:50%;width:120px;height:1px;margin-left:-60px;background:var(--red);z-index:9001;animation:load 1.4s ease-in-out infinite alternate}
+@keyframes load{0%{transform:scaleX(0);transform-origin:0 50%}50%{transform:scaleX(1);transform-origin:0 50%}50.1%{transform:scaleX(1);transform-origin:100% 50%}100%{transform:scaleX(0);transform-origin:100% 50%}}
+
+/* build badge */
+.pbadge{position:fixed;top:12px;right:14px;z-index:9999;background:var(--red);color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:5px 9px;border-radius:4px;pointer-events:none}
+
+/* canvas */
+.webgl{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:auto;touch-action:none;z-index:0;display:block}
+.content{position:relative;width:100vw;height:100vh}
+
+/* frame */
+.frame{position:fixed;inset:0;z-index:1000;pointer-events:none;padding:clamp(18px,3vw,34px)}
+.frame a{pointer-events:auto}
+.frame__title{position:absolute;top:clamp(18px,3vw,34px);left:clamp(18px,3vw,34px);margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(.72rem,1vw,.9rem);letter-spacing:.06em;text-transform:uppercase;max-width:60vw}
+.frame__hint{position:absolute;left:clamp(18px,3vw,34px);bottom:clamp(18px,3vw,34px);margin:0;font-size:10px;color:var(--dim);max-width:60vw}
+.frame__nav{position:absolute;top:clamp(18px,3vw,34px);right:clamp(18px,3vw,34px);display:flex;gap:18px;align-items:center;font-size:11px}
+.frame__cta{border:1px solid var(--line);border-radius:100px;padding:8px 16px;color:var(--red)}
+.frame__cta:hover{background:var(--red);color:#fff;opacity:1}
+@media(max-width:640px){.frame__nav{top:auto;bottom:clamp(18px,3vw,34px);right:clamp(18px,3vw,34px)}.frame__hint{display:none}.pbadge{top:auto;bottom:12px;left:14px;right:auto}}
+
+/* plane label overlay */
+.plane-label-overlay{position:fixed;inset:0;z-index:80;pointer-events:none;transition:opacity .32s ease;color:var(--ink)}
+.plane-label-overlay__left{position:absolute;left:clamp(2rem,7vw,10rem);top:50%;transform:translateY(-50%);display:grid;gap:.85rem;max-width:42vw}
+.plane-label-overlay__index{margin:0;font-size:10px;color:var(--dim)}
+.plane-label-card__word{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(1.1rem,2.4vw,2.1rem);letter-spacing:.01em;line-height:1.05;text-transform:uppercase}
+.plane-label-overlay__chip{width:20px;height:20px;border-radius:50%;display:inline-block;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 0 18px currentColor}
+.plane-label-overlay__right{position:absolute;right:clamp(2rem,6vw,8rem);top:50%;transform:translateY(-50%)}
+.plane-label-card{width:min(30vw,340px)}
+.plane-label-card__specs{margin:0;display:grid;gap:.5rem}
+.plane-label-card__row{margin:0;display:grid;grid-template-columns:5rem 1fr;gap:1rem;align-items:baseline}
+.plane-label-card__row dt{margin:0;font-size:9px;color:var(--dim)}
+.plane-label-card__row dd{margin:0;font-size:10px}
+@media(max-width:640px){
+  .plane-label-overlay__left{left:16px;top:auto;bottom:96px;transform:none;max-width:70vw;gap:.5rem}
+  .plane-label-overlay__right{display:none}
+}
+
+/* velocity visualizer (debug only, hidden) */
+.velocity-visualizer{display:none}
+
+/* ===== v2: title hover + gallery finale UI ===== */
+.frame__title{pointer-events:auto;cursor:default;transition:color .3s ease}
+.frame__brand{transition:color .3s ease;cursor:pointer}
+.frame__brand:hover{color:var(--red)}
+.frame__gal{color:var(--gold)}
+.frame__cta{transition:all .55s cubic-bezier(.22,.61,.36,1)}
+
+/* Finale: clean fullscreen photo — left texts + home link fade out */
+body.gallery-finale .frame__title,
+body.gallery-finale .frame__hint,
+body.gallery-finale .plane-label-overlay,
+body.gallery-finale .frame__nav a[href="index.html"]{
+  opacity:0;pointer-events:none;transition:opacity .5s ease;
+}
+/* Finale: "Записаться" jumps to bottom-right, bigger and brighter */
+body.gallery-finale .frame__cta{
+  position:fixed;top:auto;
+  right:clamp(20px,3.2vw,44px);
+  bottom:clamp(20px,3.2vw,44px);
+  padding:17px 42px;
+  font-size:16px;font-weight:700;letter-spacing:.12em;
+  background:var(--red);color:#fff;border-color:var(--red);
+  box-shadow:0 14px 48px rgba(255,59,48,.55);
+  z-index:1200;
+}
+body.gallery-finale .frame__cta:hover{background:#ff5147;border-color:#ff5147}
+@media(max-width:640px){
+  body.gallery-finale .frame__cta{padding:15px 30px;font-size:14px}
+}
+
+
+/* ==================== v7 — mobile now uses the full 3D depth gallery (touch-driven, same as desktop) ==================== */
+.pbadge{display:none!important}
+.mgrid{display:none!important}
