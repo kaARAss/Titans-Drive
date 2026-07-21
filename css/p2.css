@@ -52,7 +52,8 @@ body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
 
 /* ===== HERO ===== */
 .phero{position:relative;height:100svh;min-height:640px;display:flex;align-items:flex-end;overflow:hidden}
-.phero__bg{position:absolute;inset:0;z-index:0;background:url(../img/titany-hero.webp) 50% 50%/cover no-repeat;will-change:transform}
+.phero__bg{position:absolute;inset:0;z-index:0;background:url(../img/titany-hero.webp?v=6) 50% 50%/cover no-repeat;will-change:transform}
+ .phero__poster{display:none}
 .phero__scrim{position:absolute;inset:0;z-index:1;
   background:linear-gradient(180deg,rgba(10,10,12,.55) 0%,rgba(10,10,12,.15) 35%,rgba(10,10,12,.7) 82%,var(--bg) 100%)}
 .phero__inner{position:relative;z-index:2;width:100%;padding:0 var(--pad) clamp(40px,7vh,90px)}
@@ -416,9 +417,10 @@ body.tmodal-open{overflow:hidden}
   .sec__lead{margin-top:16px}
 }
 
-/* MOBILE hero on prokat2: whole portrait banner (correct proportions) + blurred backdrop, no bars, no stretch */
+/* MOBILE hero on prokat2: full 9:16 poster (not stretched/cropped) + blurred backdrop, instant load */
 @media(max-width:640px){
   .phero{min-height:100svh;background:#0b0b0d;overflow:hidden}
-  .phero__bg{z-index:1;background-image:url(../img/hero-mobile.png?v=1);background-repeat:no-repeat;background-position:center center;background-size:contain;background-color:transparent}
-  .phero::before{content:"";position:absolute;inset:0;z-index:0;background:url(../img/hero-mobile.png?v=1) center center/cover no-repeat;filter:blur(30px) brightness(.45);transform:scale(1.25)}
+  .phero__bg{display:none}
+  .phero__poster{display:block;position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center}
+  .phero::before{content:"";position:absolute;inset:0;z-index:0;background:url(../img/hero-mobile.webp?v=6) center/cover no-repeat;filter:blur(30px) brightness(.45);transform:scale(1.25)}
 }
