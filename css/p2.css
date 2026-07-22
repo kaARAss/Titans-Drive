@@ -361,7 +361,7 @@ body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
 .tgal__nav--next{right:12px}
 .tgal__count{position:absolute;top:12px;left:12px;z-index:4;padding:5px 12px;border-radius:100px;
   background:rgba(10,10,12,.62);color:#fff;font:700 .78rem/1 var(--body);letter-spacing:.04em}
-.tgal__dots{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:7px;justify-content:center;padding:7px 12px;border-radius:100px;background:rgba(10,10,12,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tgal__dots{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:7px;justify-content:center;padding:7px 12px;border-radius:100px;background:rgba(10,10,12,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .tgal__dot{width:9px;height:9px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(255,255,255,.5);transition:background .2s,transform .2s}
 .tgal__dot.active{background:var(--red);transform:scale(1.35)}
 
