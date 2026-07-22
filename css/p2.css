@@ -332,7 +332,7 @@ body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;
 .tmodal{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
   padding:clamp(12px,4vw,40px);opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s}
 .tmodal.open{opacity:1;visibility:visible}
-.tmodal__overlay{position:fixed;inset:0;background:rgba(5,5,7,.94);backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%)}
+.tmodal__overlay{position:fixed;inset:0;background:rgba(6,6,8,.97);backdrop-filter:blur(24px) saturate(120%);-webkit-backdrop-filter:blur(24px) saturate(120%)}
 .tmodal__card{position:relative;z-index:1;width:min(980px,100%);max-height:92vh;overflow:auto;
   background:#111114;border:1px solid var(--line);border-radius:22px;
   transform:translateY(24px) scale(.98);transition:transform .35s var(--ease);
@@ -395,9 +395,11 @@ body.tmodal-open{overflow:hidden}
 .tzoom__img--ph{display:flex;align-items:center;justify-content:center;background:radial-gradient(130% 130% at 50% 0%,#201a1c,#0b0b0d)}
 .tzoom__img--ph .tgal__phinner{transform:scale(1.4)}
 @media(max-width:760px){
-  .tmodal__card{grid-template-columns:1fr;max-height:94vh}
+  .tmodal{top:0;left:0;right:0;bottom:auto;height:100vh;height:100dvh;align-items:center;padding:10px}
+  .tmodal__card{grid-template-columns:1fr;width:100%;max-height:92vh;max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   .tgal{border-radius:22px 22px 0 0}
   .tgal__track,.tgal__slide{min-height:250px}
+  .tmodal__body{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
 }
 
 .tzoom__nav{position:absolute;top:50%;transform:translateY(-50%);z-index:14}
