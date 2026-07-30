@@ -144,8 +144,11 @@ class Gallery {
     this.mobilePlaneScale = 0.68
     this.mobileXSpreadFactor = 0.25
     this.mobileBreakpoint = 768
+    // На телефоне финальный кадр — вертикальный постер (другой файл).
+    const finalePlane = galleryPlaneData[galleryPlaneData.length - 1]
+    const mobileFinalePlane = Object.assign({}, finalePlane, { textureSrc: 'img/titany-hero-m.webp' })
     this.planeConfig = (typeof window !== 'undefined' && window.innerWidth <= 768)
-      ? galleryPlaneData.slice(0, 15).concat([galleryPlaneData[galleryPlaneData.length - 1]])
+      ? galleryPlaneData.slice(0, 15).concat([mobileFinalePlane])
       : galleryPlaneData
     this.moodSampleOffset = 1
     this.planeFadeSampleOffset = 1
@@ -240,6 +243,11 @@ class Gallery {
 
   getPlaneLabelData(planeDefinition, index) {
     const fallback = { word: `Кадр ${String(index + 1).padStart(2, '0')}`, loc: '', gear: '', color: '' }
+    // Если подпись задана явно и пустая — оставляем кадр совсем без надписей
+    // (финальный кадр-постер показывается чистым, без номера и слова).
+    if (planeDefinition.label && !planeDefinition.label.word) {
+      return { word: '', loc: '', gear: '', color: planeDefinition.label.color || '' }
+    }
     const label = planeDefinition.label || fallback
     return {
       word: label.word || fallback.word,
