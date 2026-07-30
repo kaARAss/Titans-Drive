@@ -4,6 +4,11 @@
    page content below begins. */
 .bw-hero{position:relative;height:300vh;width:100%;background:#343c3c}
 .bw-hero .canvas-wrapper{position:sticky;top:0;height:100vh;overflow:hidden;z-index:1}
+/* Запасной режим: если браузер не держит sticky (из-за overflow на html/body),
+   холст закрепляется скриптом — сцена не пропадает и зум идёт до конца героя. */
+.bw-hero.bw-pin .canvas-wrapper{position:absolute;top:0;left:0;width:100%}
+.bw-hero.bw-pin.is-pinned .canvas-wrapper{position:fixed;top:0;left:0;width:100%}
+.bw-hero.bw-pin.is-pinned-end .canvas-wrapper{position:absolute;top:auto;bottom:0;left:0;width:100%}
 .bw-hero .canvas-wrapper canvas{position:absolute!important;top:0;left:0;width:100%!important;height:100%!important;display:block}
 
 /* loader — "Загрузка" + progress bar */
