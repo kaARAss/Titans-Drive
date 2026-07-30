@@ -101,7 +101,7 @@
     }
 
     addCameraControls() {
-      // OrbitControls is optional: if its CDN file did not load, the scene still works.
+      // OrbitControls is optional: if its CDN file did not arrive, the hero still runs.
       if (!THREE.OrbitControls) { this.controls = null; return; }
       this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
@@ -154,15 +154,17 @@
       // Pause the WebGL render loop when the hero is scrolled out of view so the
       // content below scrolls smoothly (no GPU work competing with Lenis smooth scroll).
       this._visible = true;
+      // Watch the sticky canvas itself (not the 300vh hero block) so the scene never
+      // stops rendering while any part of it is still on screen.
       const heroEl = document.querySelector('.bw-hero .canvas-wrapper') || document.querySelector('.bw-hero');
       if (heroEl && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           const vis = entries[0].isIntersecting;
-          this._visible = vis;
-          // Draw one frame right away so the canvas is never left blank/grey.
-          if (vis && this.renderer && this.scene && this.camera) {
+          if (vis && !this._visible && this.renderer && this.scene && this.camera) {
+            // draw one frame immediately so the canvas is never left blank
             this.renderer.render(this.scene, this.camera);
           }
+          this._visible = vis;
         }, { threshold: 0, rootMargin: '300px 0px' });
         io.observe(heroEl);
       }
@@ -279,47 +281,35 @@
       }).reverse();
     }
 
+    loadModels(name, callback) {
+      const self = this;
+      let done = false;
+      const finish = (obj) => { if (done) return; done = true; callback(obj); };
+      // If the external model is blocked, slow or unreachable, build simple box
+      // buildings instead — the hero then still animates instead of staying grey.
+      const fallback = () => { if (done) return; done = true; callback(self.createFallbackModel()); };
+      const timer = setTimeout(fallback, 6000);
+
+      if (!THREE.OBJLoader) { clearTimeout(timer); fallback(); return; }
+      try {
+        const objLoader = new THREE.OBJLoader();
+        objLoader.load(name, (obj) => { clearTimeout(timer); finish(obj); }, (xhr) => {
+          if (xhr && xhr.total > 0) BWLoad.progress(xhr.loaded, xhr.total);
+        }, () => { clearTimeout(timer); fallback(); });
+      } catch (e) { clearTimeout(timer); fallback(); }
+    }
+
     createFallbackModel() {
-      // Procedural stand-in used when the external .obj model can't be fetched
-      // (CDN blocked/slow). Visually close enough: plain extruded blocks.
+      // Plain building blocks with the same proportions as the original .obj model:
+      // origin at the bottom, ~1000 units tall (the draw() step scales them down).
       const group = new THREE.Object3D();
-      [100, 84, 116].forEach((w) => {
+      const widths = [100, 84, 116];
+      widths.forEach((w) => {
         const geo = new THREE.BoxGeometry(w, 1000, w);
         geo.translate(0, 500, 0);
         group.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: '#000' })));
       });
       return group;
-    }
-
-    loadModels(name, callback) {
-      let settled = false;
-      const finish = (obj) => {
-        if (settled) return;
-        settled = true;
-        callback(obj);
-      };
-      const fallback = () => finish(this.createFallbackModel());
-
-      // Never let a slow/blocked CDN leave an empty grey hero.
-      const timer = setTimeout(fallback, 6000);
-
-      if (!THREE.OBJLoader) { clearTimeout(timer); fallback(); return; }
-
-      try {
-        const objLoader = new THREE.OBJLoader();
-        objLoader.load(name, (obj) => {
-          clearTimeout(timer);
-          finish(obj);
-        }, (xhr) => {
-          if (xhr && xhr.total > 0) BWLoad.progress(xhr.loaded, xhr.total);
-        }, () => {
-          clearTimeout(timer);
-          fallback();
-        });
-      } catch (e) {
-        clearTimeout(timer);
-        fallback();
-      }
     }
 
     draw() {
@@ -375,7 +365,6 @@
   }
 
   var booted = false;
-
   function boot() {
     if (booted) return;
     if (!document.querySelector('.bw-hero') || !document.body.querySelector('.canvas-wrapper')) return;
@@ -391,11 +380,53 @@
     }
   }
 
+  // Закрепление холста на время всей высоты героя.
+  // В некоторых браузерах position:sticky ломается из-за overflow на html/body:
+  // сцена уезжает вверх и ниже остаётся пустой серый фон. Тогда держим его сами.
+  function pinFallback() {
+    var hero = document.querySelector('.bw-hero');
+    if (!hero) return;
+    var wrap = hero.querySelector('.canvas-wrapper');
+    if (!wrap) return;
+
+    var checked = false;
+    var broken = false;
+
+    function update() {
+      var r = hero.getBoundingClientRect();
+      var h = window.innerHeight;
+
+      if (!checked && r.top < -40) {
+        checked = true;
+        if (wrap.getBoundingClientRect().top < -2) {
+          broken = true;
+          hero.classList.add('bw-pin');
+        }
+      }
+      if (!broken) return;
+
+      if (r.top <= 0 && r.bottom >= h) {
+        hero.classList.add('is-pinned');
+        hero.classList.remove('is-pinned-end');
+      } else if (r.bottom < h) {
+        hero.classList.remove('is-pinned');
+        hero.classList.add('is-pinned-end');
+      } else {
+        hero.classList.remove('is-pinned', 'is-pinned-end');
+      }
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
   window.BWHeroBoot = boot;
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
+    document.addEventListener('DOMContentLoaded', function () { pinFallback(); boot(); });
   } else {
+    pinFallback();
     boot();
   }
 })();
