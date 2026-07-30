@@ -33,8 +33,15 @@
 .bw-scrollcue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:11;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,243,239,.62);pointer-events:none;white-space:nowrap;animation:bw-cue 2s ease-in-out infinite}
 @keyframes bw-cue{0%,100%{transform:translateX(-50%) translateY(0);opacity:.5}50%{transform:translateX(-50%) translateY(6px);opacity:1}}
 
+/* Телефон: без WebGL — один экран с постером первого кадра сцены */
 @media(max-width:760px){
-  .bw-hero{height:230vh}
+  .bw-hero{height:100svh;min-height:520px}
+  .bw-hero .canvas-wrapper{position:relative;top:auto;height:100%;
+    background-color:#343c3c;
+    background-image:linear-gradient(180deg,rgba(10,10,12,.28),rgba(10,10,12,.55)),url('../img/about/hero-poster-m.webp');
+    background-size:cover,cover;background-position:center,center;background-repeat:no-repeat,no-repeat}
+  .bw-hero .bw-loader{display:none}
+  .bw-hero .canvas-wrapper canvas{display:none}
   .bw-scrollcue{font-size:.62rem;bottom:24px}
   .bw-credits{font-size:.66rem}
   .bw-title__sub{letter-spacing:.1em}
