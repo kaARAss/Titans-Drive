@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=Russo+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/about.css?v=26">
-<link rel="stylesheet" href="css/bw.css?v=8">
+<link rel="stylesheet" href="css/bw.css?v=9">
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -103,7 +103,7 @@
     </div>
     <p class="intro__lead" data-splitwords>Титаны-Драйва — аренда эндуро, питбайков, квадроциклов и мотоциклов в Екатеринбурге.</p>
     <div class="intro__cols">
-      <p class="intro__body" data-reveal>Даём технику на час, на выходные или на весь сезон, выдаём полную экипировку и всему научим с нуля. А ещё — честный ремонт мототехники любой сложности и помощь в покупке мототехники из Китая напрямую от поставщиков: подберём и привезём новый байк, квадроцикл или багги под заказ — значительно дешевле, чем в салоне.</p>
+      <p class="intro__body" data-reveal>Даём технику на час, на выходные или на весь сезон, выдаём полную экипировку и ��сему научим с нуля. А ещё — честный ремонт мототехники любой сложности и помощь в покупке мототехники из Китая напрямую от поставщиков: подберём и привезём новый байк, квадроцикл или багги под заказ — значительно дешевле, чем в салоне.</p>
       <p class="intro__body" data-reveal>Живописные мототуры по горам, лесам и к заброшенным местам — под любой формат: от двухчасовой поездки до путешествия на несколько дней. Проверенные маршруты, механик и горячая еда уже ждут на пути. Можно на своём мотоцикле, можно на нашем.</p>
     </div>
     <div class="intro__marks">
@@ -205,37 +205,51 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-<!-- BuildingsWave hero (Codrops / iondrimba, MIT) -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.110.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/loaders/OBJLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.5/TweenMax.min.js"></script>
-<script src="js/bw-hero.js?v=7"></script>
+<!-- BuildingsWave hero (Codrops / iondrimba, MIT) — библиотеки 3D грузятся ниже и только на десктопе -->
+<script src="js/bw-hero.js?v=8"></script>
 <script src="js/about.js?v=15"></script>
 <script>
-/* Some networks throttle or block single CDNs. If the 3D library did not arrive,
-   retry it from mirrors and start the hero again, so it never stays an empty block. */
+/* Телефон: 3D не грузим вообще — в герое статичный постер.
+   Десктоп: грузим последовательно, с запасными зеркалами, чтобы блок никогда не оставался пустым. */
 (function () {
+  function startHero() { if (window.BWHeroBoot) window.BWHeroBoot(); }
+  var mobile = window.matchMedia
+    ? window.matchMedia('(max-width:760px)').matches
+    : window.innerWidth <= 760;
+  if (mobile) { startHero(); return; }
+
   function loadFrom(urls, test, done) {
-    if (test()) { done(); return; }
+    if (test && test()) { done(); return; }
     var i = 0;
     (function next() {
       if (i >= urls.length) { done(); return; }
       var s = document.createElement('script');
       s.src = urls[i++];
-      s.onload = function () { test() ? done() : next(); };
+      s.onload = function () { (!test || test()) ? done() : next(); };
       s.onerror = next;
       document.head.appendChild(s);
     })();
   }
-  function startHero() { if (window.BWHeroBoot) window.BWHeroBoot(); }
+
   loadFrom([
+    'https://cdn.jsdelivr.net/npm/three@0.110.0/build/three.min.js',
     'https://unpkg.com/three@0.110.0/build/three.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js'
   ], function () { return !!window.THREE; }, function () {
     loadFrom([
-      'https://unpkg.com/gsap@1.20.5/TweenMax.min.js'
-    ], function () { return !!window.TweenMax; }, startHero);
+      'https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/loaders/OBJLoader.js',
+      'https://unpkg.com/three@0.110.0/examples/js/loaders/OBJLoader.js'
+    ], function () { return !!(window.THREE && window.THREE.OBJLoader); }, function () {
+      loadFrom([
+        'https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/controls/OrbitControls.js',
+        'https://unpkg.com/three@0.110.0/examples/js/controls/OrbitControls.js'
+      ], null, function () {
+        loadFrom([
+          'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.5/TweenMax.min.js',
+          'https://unpkg.com/gsap@1.20.5/TweenMax.min.js'
+        ], function () { return !!window.TweenMax; }, startHero);
+      });
+    });
   });
 })();
 </script>
