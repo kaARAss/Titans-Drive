@@ -365,9 +365,25 @@
   }
 
   var booted = false;
+  // На телефонах 3D-сцена не запускается вообще — вместо неё статичный постер.
+  function isMobileHero() {
+    return window.matchMedia
+      ? window.matchMedia('(max-width:760px)').matches
+      : window.innerWidth <= 760;
+  }
+
+  function posterMode() {
+    var hero = document.querySelector('.bw-hero');
+    if (!hero) return;
+    hero.classList.add('bw-hero--poster');
+    var loader = document.getElementById('bwLoader');
+    if (loader) loader.classList.add('bw-loader--done');
+  }
+
   function boot() {
     if (booted) return;
     if (!document.querySelector('.bw-hero') || !document.body.querySelector('.canvas-wrapper')) return;
+    if (isMobileHero()) { booted = true; posterMode(); return; }
     THREE = window.THREE;
     if (!THREE) { console.warn('BuildingsWave: THREE not loaded'); return; }
     booted = true;
@@ -384,6 +400,7 @@
   // В некоторых браузерах position:sticky ломается из-за overflow на html/body:
   // сцена уезжает вверх и ниже остаётся пустой серый фон. Тогда держим его сами.
   function pinFallback() {
+    if (isMobileHero()) return;
     var hero = document.querySelector('.bw-hero');
     if (!hero) return;
     var wrap = hero.querySelector('.canvas-wrapper');
