@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=Russo+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/about.css?v=25">
-<link rel="stylesheet" href="css/bw.css?v=7">
+<link rel="stylesheet" href="css/about.css?v=26">
+<link rel="stylesheet" href="css/bw.css?v=8">
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -210,33 +210,33 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/loaders/OBJLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.5/TweenMax.min.js"></script>
-<script src="js/bw-hero.js?v=6"></script>
+<script src="js/bw-hero.js?v=7"></script>
 <script src="js/about.js?v=15"></script>
 <script>
-/* Зеркала для 3D-героя: если основной CDN недоступен, тянем three.js с запасных. */
+/* Some networks throttle or block single CDNs. If the 3D library did not arrive,
+   retry it from mirrors and start the hero again, so it never stays an empty block. */
 (function () {
-  if (window.THREE) return;
-  var three = [
+  function loadFrom(urls, test, done) {
+    if (test()) { done(); return; }
+    var i = 0;
+    (function next() {
+      if (i >= urls.length) { done(); return; }
+      var s = document.createElement('script');
+      s.src = urls[i++];
+      s.onload = function () { test() ? done() : next(); };
+      s.onerror = next;
+      document.head.appendChild(s);
+    })();
+  }
+  function startHero() { if (window.BWHeroBoot) window.BWHeroBoot(); }
+  loadFrom([
     'https://unpkg.com/three@0.110.0/build/three.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js'
-  ];
-  function add(src, ok, fail) {
-    var s = document.createElement('script');
-    s.src = src; s.onload = ok; s.onerror = fail;
-    document.head.appendChild(s);
-  }
-  function tryThree(i) {
-    if (i >= three.length) return;
-    add(three[i], function () {
-      if (window.TweenMax) { if (window.BWHeroBoot) window.BWHeroBoot(); return; }
-      add('https://unpkg.com/gsap@1.20.5/TweenMax.min.js', function () {
-        if (window.BWHeroBoot) window.BWHeroBoot();
-      }, function () {
-        if (window.BWHeroBoot) window.BWHeroBoot();
-      });
-    }, function () { tryThree(i + 1); });
-  }
-  tryThree(0);
+  ], function () { return !!window.THREE; }, function () {
+    loadFrom([
+      'https://unpkg.com/gsap@1.20.5/TweenMax.min.js'
+    ], function () { return !!window.TweenMax; }, startHero);
+  });
 })();
 </script>
 </body>
