@@ -199,3 +199,48 @@
     ScrollTrigger.refresh();
   }
 })();
+
+
+/* ---- Ленивая загрузка фоновых фото [data-bg] --------------------------- */
+(function () {
+  var els = [].slice.call(document.querySelectorAll('[data-bg]'));
+  if (!els.length) return;
+  document.documentElement.classList.add('js-bg');
+
+  function load(el, cb) {
+    if (el.dataset.bgLoaded) { if (cb) cb(); return; }
+    el.dataset.bgLoaded = '1';
+    var src = el.getAttribute('data-bg');
+    if (!src) { if (cb) cb(); return; }
+    var img = new Image();
+    var show = function () {
+      el.style.backgroundImage = "url('" + src + "')";
+      el.classList.add('bg-in');
+      if (cb) cb();
+    };
+    img.onload = show;
+    img.onerror = show;
+    img.src = src;
+  }
+
+  if (!('IntersectionObserver' in window)) { els.forEach(function (el) { load(el); }); return; }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { load(e.target); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '700px 1000px' });
+
+  els.forEach(function (el) { io.observe(el); });
+
+  // Страховка: то, что не успело подгрузиться, тихо докачиваем по одному
+  // через несколько секунд после загрузки страницы — ни одна плитка не останется пустой.
+  setTimeout(function () {
+    var queue = els.filter(function (el) { return !el.dataset.bgLoaded; });
+    (function next() {
+      var el = queue.shift();
+      if (!el) return;
+      load(el, next);
+    })();
+  }, 5000);
+})();

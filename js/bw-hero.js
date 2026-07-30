@@ -101,6 +101,8 @@
     }
 
     addCameraControls() {
+      // OrbitControls is optional: if its CDN file did not load, the scene still works.
+      if (!THREE.OrbitControls) { this.controls = null; return; }
       this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
       this.controls.enabled = false;
@@ -152,11 +154,16 @@
       // Pause the WebGL render loop when the hero is scrolled out of view so the
       // content below scrolls smoothly (no GPU work competing with Lenis smooth scroll).
       this._visible = true;
-      const heroEl = document.querySelector('.bw-hero');
+      const heroEl = document.querySelector('.bw-hero .canvas-wrapper') || document.querySelector('.bw-hero');
       if (heroEl && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
-          this._visible = entries[0].isIntersecting;
-        }, { threshold: 0, rootMargin: '120px 0px' });
+          const vis = entries[0].isIntersecting;
+          this._visible = vis;
+          // Draw one frame right away so the canvas is never left blank/grey.
+          if (vis && this.renderer && this.scene && this.camera) {
+            this.renderer.render(this.scene, this.camera);
+          }
+        }, { threshold: 0, rootMargin: '300px 0px' });
         io.observe(heroEl);
       }
 
@@ -272,12 +279,47 @@
       }).reverse();
     }
 
-    loadModels(name, callback) {
-      const objLoader = new THREE.OBJLoader();
-
-      objLoader.load(name, callback, (xhr) => {
-        if (xhr && xhr.total > 0) BWLoad.progress(xhr.loaded, xhr.total);
+    createFallbackModel() {
+      // Procedural stand-in used when the external .obj model can't be fetched
+      // (CDN blocked/slow). Visually close enough: plain extruded blocks.
+      const group = new THREE.Object3D();
+      [100, 84, 116].forEach((w) => {
+        const geo = new THREE.BoxGeometry(w, 1000, w);
+        geo.translate(0, 500, 0);
+        group.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: '#000' })));
       });
+      return group;
+    }
+
+    loadModels(name, callback) {
+      let settled = false;
+      const finish = (obj) => {
+        if (settled) return;
+        settled = true;
+        callback(obj);
+      };
+      const fallback = () => finish(this.createFallbackModel());
+
+      // Never let a slow/blocked CDN leave an empty grey hero.
+      const timer = setTimeout(fallback, 6000);
+
+      if (!THREE.OBJLoader) { clearTimeout(timer); fallback(); return; }
+
+      try {
+        const objLoader = new THREE.OBJLoader();
+        objLoader.load(name, (obj) => {
+          clearTimeout(timer);
+          finish(obj);
+        }, (xhr) => {
+          if (xhr && xhr.total > 0) BWLoad.progress(xhr.loaded, xhr.total);
+        }, () => {
+          clearTimeout(timer);
+          fallback();
+        });
+      } catch (e) {
+        clearTimeout(timer);
+        fallback();
+      }
     }
 
     draw() {
@@ -327,14 +369,19 @@
       // Skip heavy GPU work while the hero is off-screen (smooth content scroll below).
       if (this._visible === false) return;
 
-      this.controls.update();
+      if (this.controls) this.controls.update();
       this.renderer.render(this.scene, this.camera);
     }
   }
 
+  var booted = false;
+
   function boot() {
+    if (booted) return;
     if (!document.querySelector('.bw-hero') || !document.body.querySelector('.canvas-wrapper')) return;
-    if (!THREE || !THREE.OBJLoader) { console.warn('BuildingsWave: THREE / OBJLoader not loaded'); return; }
+    THREE = window.THREE;
+    if (!THREE) { console.warn('BuildingsWave: THREE not loaded'); return; }
+    booted = true;
     try {
       BWLoad.start();
       const app = new App();
@@ -343,6 +390,8 @@
       console.warn('BuildingsWave init failed', e);
     }
   }
+
+  window.BWHeroBoot = boot;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
